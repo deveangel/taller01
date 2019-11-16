@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+  mongo-service-container:
+    image: mongo:3.4.23-xenial
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE : prueba
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./init.js:/docker-entrypoint-initdb.d/init.js
+    networks:
+      - overlay01
+  node-microservicio-01:
+    image: demo01:v01
+    ports:
+      - "4000:4000"
+    networks:
+      - overlay01
+networks:
+    overlay01:
