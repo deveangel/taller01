@@ -1,0 +1,51 @@
+-- init db
+docker run --name dataserver01 -p 27017:27017 -e MONGO_INITDB_DATABASE=prueba -v ${PWD}/initialize:/docker-entrypoint-initdb.d -d mongo:3.4.23-xenial
+
+-- montar db
+docker run --name dataserver01 -p 27017:27017 -e MONGO_INITDB_DATABASE=prueba -v ${PWD}/datapersistente:/data/db -d mongo:3.4.23-xenial
+
+-- install docker compose
+sudo wget "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -O /usr/local/bin/docker-compose  
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+docker rmi ${docker images | grep none | awk '{print $3}'}
+
+mkdir /home/docker/taller02/mvncache 
+
+docker run -v $PWD:/opt -v /home/docker/taller02/mvncache:/root/.m2 maven:3.6.2-jdk-8 sh -c "cd /opt && mvn clean install"	
+
+services:
+  postgres-service-container:
+    image: postgres:9.4-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: pguser01
+      POSTGRES_PASSWORD: pgpassword
+      POSTGRES_DB: pgdatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - overlay01
+  java-microservicio-01:
+    image: test01:v01
+    ports:
+      - "3081:3081"
+    networks:
+      - overlay01
+networks:
+    overlay01:
+
+-- borrar todo
+docker-compose down --remove-orphans
+docker container prune
+
+
+$ curl -Ss https://api.telegram.org/bot987876439:AAFC1FZbEwsYXaPsEBWd4Wz4x2kOuH65Kic/getUpdates
+
+curl -Ss -X POST https://api.telegram.org/bot987876439:AAFC1FZbEwsYXaPsEBWd4Wz4x2kOuH65Kic/sendMessage -d chat_id=997732076 -d text="XD"
+
+ curl -Ss -X POST https://api.telegram.org/bot987876439:AAFC1FZbEwsYXaPsEBWd4Wz4x2kOuH65Kic/sendDocument -F chat_id=-346154330 -F document=@"./docker01.java" -F caption="jaa file"
+
